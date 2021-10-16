@@ -4,11 +4,15 @@
         url = "https://adbirt.com/campaigns/verified";
         camp_code = '';
         isCampaignPage = false;
+        params = new URLSearchParams;
+
+        // --
+
 
         constructor() {
 
-            const url = new URL(window.location.href)
-            const params = url.searchParams;
+            const currentPageUrl = new URL(window.location.href)
+            const params = this.params = currentPageUrl.searchParams;
 
             this.camp_code = params.get('camp_code');
             this.isCampaignPage = (this.camp_code) ? true : false;
@@ -17,22 +21,19 @@
 
         }
 
-        paymentPageInit() {
-            return this.redirectFormSubmitInit();
-        }
+        // --
 
-        paymentSuccessPageConsume() {
-            return this.redirectFormSubmit();
-        }
 
         redirectFormSubmitInit() {
             if (this.isCampaignPage) {
                 const isRedirectFormCampaign = true;
                 let token = window.localStorage.getItem('camp_code');
                 if (isRedirectFormCampaign) {
-                    //make request to backedn at get token
+                    // make request to backend at get token
                     let token = this.camp_code
-                    return window.localStorage.setItem('camp_code', token)
+                    window.localStorage.setItem('camp_code', token);
+
+                    return token;
                 }
             } else
                 return window.localStorage.removeItem('camp_code')
@@ -61,6 +62,20 @@
             }
         }
 
+        // --
+
+
+        paymentPageInit() {
+            return this.redirectFormSubmitInit();
+        }
+
+        paymentSuccessPageConsume() {
+            return this.redirectFormSubmit();
+        }
+
+        // --
+
+
         async asyncFormSubmit() {
             if (this.isCampaignPage)
                 return;
@@ -77,6 +92,9 @@
                 return res;
             }
         }
+
+        // --
+
 
         download(id) {
             if (!this.isCampaignPage)
@@ -105,6 +123,16 @@
             return this.download(id);
         }
 
+
+        // --
+
+
+        /**
+         * Makes an api call to adbirt backend
+         * @param {FormData} reqBody The request body
+         * @param {string} msg An alert message
+         * @returns {Promise}
+         */
         makeApiCall(reqBody, msg) {
             return new Promise((resolve, reject) => {
                 fetch(this.url, {
@@ -146,7 +174,7 @@
     /**
      * @type {Adbirt} {@link Adbirt}
      */
-    let AB = null
+    let AB = null;
     try {
         AB = new Adbirt;
 
