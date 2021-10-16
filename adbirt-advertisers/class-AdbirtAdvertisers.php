@@ -152,8 +152,8 @@ class AdbirtAdvertisers
         // $is_success_page_url = false;
 
         foreach (array('landing', 'success') as $index => $mode) {
-            $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url&url_type=$mode");
-            $body = json_decode($res['body'], true);
+            $res = wp_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url&url_type=$mode");
+            $body = $res['body'];
 
             // $type = $body['type'];
             $is_valid = boolval($body['is_valid']);
