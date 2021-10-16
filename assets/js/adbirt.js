@@ -6,6 +6,7 @@
         isCampaignPage = false;
         params = new URLSearchParams;
 
+
         // --
 
 
@@ -27,9 +28,8 @@
         redirectFormSubmitInit() {
             if (this.isCampaignPage) {
                 const isRedirectFormCampaign = true;
-                let token = window.localStorage.getItem('camp_code');
                 if (isRedirectFormCampaign) {
-                    // make request to backend at get token
+
                     let token = this.camp_code
                     window.localStorage.setItem('camp_code', token);
 
