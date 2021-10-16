@@ -147,7 +147,7 @@ class AdbirtAdvertisers
 
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
         $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
-        $req_url_encoded = urlencode($req_url);
+        $req_url_encoded = urldecode($req_url);
 
         // $is_landing_page_url = false;
         // $is_success_page_url = false;
