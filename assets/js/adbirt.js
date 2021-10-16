@@ -1,18 +1,28 @@
 (() => {
     class Adbirt {
-        url = "https://adbirt.com/campaigns/verified"
+
+        url = "https://adbirt.com/campaigns/verified";
+        camp_code = '';
+        isCampaignPage = false;
+
         constructor() {
+
             const url = new URL(window.location.href)
             const params = url.searchParams;
-            this.camp_code = params.get('camp_code')
-            this.isCampaignPage = (this.camp_code) ? true : false
+
+            this.camp_code = params.get('camp_code');
+            this.isCampaignPage = (this.camp_code) ? true : false;
+
         }
+
         paymentPageInit() {
-            this.redirectFormSubmitInit()
+            this.redirectFormSubmitInit();
         }
+
         paymentSuccessPageConsume() {
-            this.redirectFormSubmit()
+            this.redirectFormSubmit();
         }
+
         redirectFormSubmitInit() {
             if (this.isCampaignPage) {
                 const isRedirectFormCampaign = true;
@@ -25,6 +35,7 @@
             } else
                 window.localStorage.removeItem('camp_code')
         }
+
         async asyncFormSubmit() {
             if (this.isCampaignPage)
                 return;
@@ -37,6 +48,7 @@
                 console.log(err)
             }
         }
+
         async redirectFormSubmit() {
             if (this.isCampaignPage)
                 return;
@@ -55,6 +67,7 @@
                 }
             }
         }
+
         download(id) {
             if (!this.isCampaignPage)
                 return;
@@ -77,6 +90,7 @@
                 }
             })
         }
+
         makeApiCall(reqBody, msg) {
             return new Promise((resolve, reject) => {
                 fetch(this.url, {
@@ -112,6 +126,7 @@
             })
 
         }
+
     }
     let AB = null
     try {
