@@ -161,10 +161,10 @@ class AdbirtAdvertisers
             if ($is_valid) {
                 $content .= do_shortcode("[adbirt-$mode-page-tracker]");
             } else {
-                $content .= "<br /><span>No valid $mode page</span><br />";
+                // not a campaign page
             }
 
-            $content .= '<br>url is: ' . $req_url . '<br>';
+            // $content .= "<br><p>url is: $req_url<p><br>";
         }
 
         return $content;
