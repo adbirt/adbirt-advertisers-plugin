@@ -147,28 +147,24 @@ class AdbirtAdvertisers
 
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
         $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
+        $req_url_encoded = urldecode($req_url);
 
         // $is_landing_page_url = false;
         // $is_success_page_url = false;
 
         foreach (array('landing', 'success') as $index => $mode) {
-            $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url&url_type=$mode");
+            $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url_encoded&url_type=$mode");
             $body = json_decode($res['body'], true);
 
-            // $type = $body['type'];
             $is_valid = boolval($body['is_valid']);
-
-            // if ($index == 0) {
-            //     $is_landing_page_url = $is_valid;
-            // } else {
-            //     $is_success_page_url = $is_valid;
-            // }
 
             if ($is_valid) {
                 $content .= do_shortcode("[adbirt-$mode-page-tracker]");
             } else {
-                $content .= '<h1>Adbirt plugin is sha working</h1><br />';
+                $content .= "<br /><span>No valid $mode page</span><br />";
             }
+
+            $content .= '<br>url is: ' . $req_url . '<br>';
         }
 
         return $content;
