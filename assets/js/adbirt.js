@@ -13,14 +13,16 @@
             this.camp_code = params.get('camp_code');
             this.isCampaignPage = (this.camp_code) ? true : false;
 
+            return this;
+
         }
 
         paymentPageInit() {
-            this.redirectFormSubmitInit();
+            return this.redirectFormSubmitInit();
         }
 
         paymentSuccessPageConsume() {
-            this.redirectFormSubmit();
+            return this.redirectFormSubmit();
         }
 
         redirectFormSubmitInit() {
@@ -30,23 +32,10 @@
                 if (isRedirectFormCampaign) {
                     //make request to backedn at get token
                     let token = this.camp_code
-                    window.localStorage.setItem('camp_code', token)
+                    return window.localStorage.setItem('camp_code', token)
                 }
             } else
-                window.localStorage.removeItem('camp_code')
-        }
-
-        async asyncFormSubmit() {
-            if (this.isCampaignPage)
-                return;
-            const formData = new FormData
-            formData.append('campaign_code', this.camp_code)
-            try {
-                const res = await this.makeApiCall(formData, 'Async Form campaign success !!')
-                console.log(res)
-            } catch (err) {
-                console.log(err)
-            }
+                return window.localStorage.removeItem('camp_code')
         }
 
         async redirectFormSubmit() {
@@ -60,11 +49,32 @@
                 try {
                     const res = await this.makeApiCall(formData, 'Redirect Form campaign success !!')
                     console.log(res)
-                    window.localStorage.removeItem('camp_code')
+                    window.localStorage.removeItem('camp_code');
+
+                    return res;
                 } catch (err) {
                     console.log(err)
-                    window.localStorage.removeItem('camp_code')
+                    window.localStorage.removeItem('camp_code');
+
+                    return res;
                 }
+            }
+        }
+
+        async asyncFormSubmit() {
+            if (this.isCampaignPage)
+                return;
+            const formData = new FormData
+            formData.append('campaign_code', this.camp_code)
+            try {
+                const res = await this.makeApiCall(formData, 'Async Form campaign success !!')
+                console.log(res);
+
+                return res;
+            } catch (err) {
+                console.log(err);
+
+                return res;
             }
         }
 
@@ -89,6 +99,10 @@
                         // })
                 }
             })
+        }
+
+        clickAction(id) {
+            return this.download(id);
         }
 
         makeApiCall(reqBody, msg) {
@@ -128,9 +142,24 @@
         }
 
     }
+
+    /**
+     * @type {Adbirt} {@link Adbirt}
+     */
     let AB = null
     try {
         AB = new Adbirt;
+
+        if (window.AB) {
+            window._Adbirt = AB;
+        } else {
+            window.AB = AB;
+        }
+
+        window.adbirtNoConflict = () => {
+            return AB;
+        }
+
     } catch (err) {
         console.log(err);
     }

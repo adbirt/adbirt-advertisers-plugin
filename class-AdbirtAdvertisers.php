@@ -14,6 +14,7 @@ $is_debug_mode = true;
  */
 class AdbirtAdvertisers
 {
+
     public function __construct()
     {
         add_filter('wp_enqueue_scripts', array($this, 'register_css_and_js'));
@@ -36,7 +37,7 @@ class AdbirtAdvertisers
     {
         global $is_debug_mode;
 
-        $adbirt_js_path = $is_debug_mode ? '' : '';
+        $adbirt_js_path = $is_debug_mode ? trailingslashit(plugin_dir_url(__FILE__)) . 'assets/js/adbirt.js' : 'https://adbirt.com/public/js/adbirt.js';
         wp_enqueue_script('adbirt-advertisers', $adbirt_js_path, false, '1.0.0', false);
     }
 
