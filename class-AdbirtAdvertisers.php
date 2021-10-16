@@ -22,18 +22,76 @@ class AdbirtAdvertisers
 
         add_shortcode('adbirt-landing-page-tracker', array($this, 'adbirt_landing_page_tracker_shortcode'));
         add_shortcode('adbirt-success-page-tracker', array($this, 'adbirt_success_page_tracker_shortcode'));
+        // 
         add_shortcode('adbirt-download-link', array($this, 'adbirt_download_button_shortcode'));
-
+        // 
+        add_shortcode('adbirt-async-form-submit', array($this, 'adbirt_async_form_submit'));
+        add_shortcode('adbirt-redirect-form-submit-init', array($this, 'adbirt_redirect_form_submit_init'));
+        add_shortcode('adbirt-redirect-form-submit-success', array($this, 'adbirt_redirect_form_success'));
+        add_shortcode('adbirt-payment-init', array($this, 'adbirt_payment_init'));
+        add_shortcode('adbirt-payment-success', array($this, 'adbirt_payment_success'));
 
         return $this;
     }
 
+    public function adbirt_async_form_submit_shortcode($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_async_form_submit');
+    }
+
+    public function adbirt_redirect_form_submit_init_shortcode($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_redirect_form_submit_init');
+    }
+
     public function adbirt_landing_page_tracker_shortcode($attributes = array(), $content = '')
     {
-        $attrs = shortcode_atts(
-            array(),
-            $attributes
+        return $this->adbirt_js_snippets('adbirt_redirect_form_submit_init');
+    }
+
+    public function adbirt_redirect_form_success_shortcode($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_redirect_form_success');
+    }
+
+    public function adbirt_success_page_tracker_shortcode($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_redirect_form_success');
+    }
+
+    public function adbirt_payment_init_shortcode($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_payment_init');
+    }
+
+    public function adbirt_payment_success($attributes = array(), $content = '')
+    {
+        return $this->adbirt_js_snippets('adbirt_payment_success');
+    }
+
+    public function adbirt_js_snippets($type)
+    {
+        $types = array(
+            'adbirt_async_form_submit' => 'AB.asyncFormSubmit();',
+            'adbirt_redirect_form_submit_init' => 'AB.redirectFormSubmitInit();',
+            'adbirt_redirect_form_success' => 'AB.redirectFormSubmit();',
+            'adbirt_payment_init' => 'AB.paymentPageInit();',
+            'adbirt_payment_success' => 'AB.paymentSuccessPageConsume();'
         );
+
+        $snippet = $types[$type];
+
+        ob_start();
+?>
+        <script>
+            (() => {
+                const AB = window.adbirtNoConflict();
+
+                <?php echo $snippet; ?>
+            })();
+        </script>
+    <?php
+        return ob_get_clean();
     }
 
 
@@ -51,15 +109,6 @@ class AdbirtAdvertisers
     }
 
 
-    public function adbirt_success_page_tracker_shortcode($attributes = array(), $content = '')
-    {
-        $attrs = shortcode_atts(
-            array(),
-            $attributes
-        );
-    }
-
-
     public function add_advertisers_js_filter($content)
     {
         global $wp;
@@ -69,13 +118,28 @@ class AdbirtAdvertisers
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
         $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
 
-        $is_landing_page_url = false;
-        $is_success_page_url = false;
+        // $is_landing_page_url = false;
+        // $is_success_page_url = false;
 
-        $shortcode = $is_landing_page_url ? '[adbirt-landing-page-tracker]' : ($is_success_page_url ? '[adbirt-success-page-tracker]' : '');
+        foreach (array('landing', 'success') as $index => $mode) {
+            $res = wp_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url&url_type=$mode");
+            $body = $res['body'];
 
-        $shortcode_content = do_shortcode($shortcode);
-        $content .= $shortcode_content;
+            // $type = $body['type'];
+            $is_valid = boolval($body['is_valid']);
+
+            // if ($index == 0) {
+            //     $is_landing_page_url = $is_valid;
+            // } else {
+            //     $is_success_page_url = $is_valid;
+            // }
+
+            if ($is_valid) {
+                $content .= do_shortcode("[adbirt-$mode-page-tracker]");
+            } else {
+                $content .= '<h1>Adbirt plugin is sha working</h1><br />';
+            }
+        }
 
         return $content;
     }
@@ -110,7 +174,7 @@ class AdbirtAdvertisers
         );
 
         ob_start();
-?>
+    ?>
         <a id="adbirt-<?php echo $this->generate_random_string(); ?>" href="<?php echo $attrs['href'] ?>">
             <button class="button btn">
                 <?php echo $content; ?>
