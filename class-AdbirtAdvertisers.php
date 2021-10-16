@@ -34,6 +34,36 @@ class AdbirtAdvertisers
         return $this;
     }
 
+    public function adbirt_download_button_shortcode($attributes = array(), $content = '')
+    {
+
+        $attrs = shortcode_atts(
+            array(
+                'href' => '',
+            ),
+            $attributes
+        );
+
+        $unique_id = 'adbirt-' . $this->generate_random_string();
+
+        ob_start();
+?>
+        <a id="<?php echo $unique_id; ?>" href="<?php echo $attrs['href'] ?>">
+            <button class="button btn adbirt-btn">
+                <?php echo $content; ?>
+            </button>
+        </a>
+        <script>
+            (() => {
+                const AB = window.adbirtNoConflict();
+
+                AB.download("<?php echo $unique_id; ?>")
+            })();
+        </script>
+    <?php
+        return ob_get_clean();
+    }
+
     public function adbirt_async_form_submit_shortcode($attributes = array(), $content = '')
     {
         return $this->adbirt_js_snippets('adbirt_async_form_submit');
@@ -69,9 +99,9 @@ class AdbirtAdvertisers
         return $this->adbirt_js_snippets('adbirt_payment_success');
     }
 
-    public function adbirt_js_snippets($type)
+    public function adbirt_js_snippets($snippet_type)
     {
-        $types = array(
+        $snippet_types = array(
             'adbirt_async_form_submit' => 'AB.asyncFormSubmit();',
             'adbirt_redirect_form_submit_init' => 'AB.redirectFormSubmitInit();',
             'adbirt_redirect_form_success' => 'AB.redirectFormSubmit();',
@@ -79,10 +109,10 @@ class AdbirtAdvertisers
             'adbirt_payment_success' => 'AB.paymentSuccessPageConsume();'
         );
 
-        $snippet = $types[$type];
+        $snippet = $snippet_types[$snippet_type];
 
         ob_start();
-?>
+    ?>
         <script>
             (() => {
                 const AB = window.adbirtNoConflict();
@@ -90,7 +120,7 @@ class AdbirtAdvertisers
                 <?php echo $snippet; ?>
             })();
         </script>
-    <?php
+<?php
         return ob_get_clean();
     }
 
@@ -161,26 +191,5 @@ class AdbirtAdvertisers
 
         $adbirt_js_path = $is_debug_mode ? trailingslashit(plugin_dir_url(__FILE__)) . 'assets/js/adbirt.js' : 'https://adbirt.com/public/js/adbirt.js';
         wp_enqueue_script('adbirt-advertisers', $adbirt_js_path, false, '1.0.0', false);
-    }
-
-    public function adbirt_download_button_shortcode($attributes = array(), $content = '')
-    {
-
-        $attrs = shortcode_atts(
-            array(
-                'href' => '',
-            ),
-            $attributes
-        );
-
-        ob_start();
-    ?>
-        <a id="adbirt-<?php echo $this->generate_random_string(); ?>" href="<?php echo $attrs['href'] ?>">
-            <button class="button btn">
-                <?php echo $content; ?>
-            </button>
-        </a>
-<?php
-        return ob_get_clean();
     }
 }
