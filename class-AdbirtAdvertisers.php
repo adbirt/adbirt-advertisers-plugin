@@ -64,8 +64,10 @@ class AdbirtAdvertisers
     {
         global $wp;
 
+        $url_query_vars = $wp->query_vars;
+
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
-        $req_url = home_url(add_query_arg(array(), $wp->request));
+        $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
 
         $is_landing_page_url = false;
         $is_success_page_url = false;
