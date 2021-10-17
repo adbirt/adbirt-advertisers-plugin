@@ -27,7 +27,6 @@
 
 /**
  * @package adbirt-advertisers
- * @version 1.0.0
  */
 
 

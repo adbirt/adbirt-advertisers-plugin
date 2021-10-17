@@ -12,7 +12,7 @@
 
         constructor() {
 
-            const currentPageUrl = new URL(window.location.href)
+            const currentPageUrl = new URL(window.location.href);
             const params = this.params = currentPageUrl.searchParams;
 
             this.camp_code = params.get('camp_code');
@@ -26,40 +26,53 @@
 
 
         redirectFormSubmitInit() {
-            if (this.isCampaignPage) {
-                const isRedirectFormCampaign = true;
-                if (isRedirectFormCampaign) {
+
+            try {
+                if (this.isCampaignPage) {
 
                     let token = this.camp_code
-                    window.localStorage.setItem('camp_code', token);
+                    window.localStorage.setItem('redirect_camp_code', token);
 
                     return token;
                 }
-            } else
-                return window.localStorage.removeItem('camp_code')
+                // else {
+                //     return window.localStorage.removeItem('redirect_camp_code');
+                // }
+            } catch (error) {
+                return error;
+            }
+
         }
 
         async redirectFormSubmit() {
-            if (this.isCampaignPage)
-                return;
-            let token = window.localStorage.getItem('camp_code');
-            if (token) {
-                //make request to backend with token to check valid or not 
-                const formData = new FormData
-                formData.append('campaign_code', token)
-                try {
-                    const res = await this.makeApiCall(formData, 'Redirect Form campaign success !!')
-                    console.log(res)
-                    window.localStorage.removeItem('camp_code');
 
-                    return res;
-                } catch (err) {
-                    console.log(err)
-                    window.localStorage.removeItem('camp_code');
+            try {
+                // if (this.isCampaignPage) {
+                //     return;
+                // }
+                let token = window.localStorage.getItem('redirect_camp_code');
 
-                    return res;
+                if (token) {
+                    //make request to backend with token to check valid or not 
+                    const formUrlParams = new URLSearchParams();
+                    formUrlParams.append('campaign_code', token);
+                    try {
+                        const res = await this.makeApiCall(formUrlParams, 'Redirect Form campaign success !!');
+                        console.log(await res.text());
+                        window.localStorage.removeItem('redirect_camp_code');
+
+                        return res;
+                    } catch (err) {
+                        console.log(err);
+                        // window.localStorage.removeItem('camp_code');
+
+                        return err;
+                    }
                 }
+            } catch (error) {
+                return error;
             }
+
         }
 
         // --
@@ -73,23 +86,28 @@
             return this.redirectFormSubmit();
         }
 
+
         // --
 
 
         async asyncFormSubmit() {
-            if (this.isCampaignPage)
-                return;
-            const formData = new FormData
-            formData.append('campaign_code', this.camp_code)
+
+            // if (this.isCampaignPage) {
+            //     return;
+            // }
+
+            const formUrlParams = new URLSearchParams
+            formUrlParams.append('campaign_code', this.camp_code);
+
             try {
-                const res = await this.makeApiCall(formData, 'Async Form campaign success !!')
+                const res = await this.makeApiCall(formUrlParams, 'Async Form campaign success !!')
                 console.log(res);
 
                 return res;
             } catch (err) {
                 console.log(err);
 
-                return res;
+                return err;
             }
         }
 
@@ -97,26 +115,29 @@
 
 
         download(id) {
-            if (!this.isCampaignPage)
-                return;
-            const element = document.getElementById(id)
+
+            // if (!this.isCampaignPage) {
+            //     return;
+            // }
+
+            const element = document.getElementById(id);
+
             element.addEventListener('click', async() => {
-                const formData = new FormData
-                formData.append('campaign_code', this.camp_code)
+                const formUrlParams = new URLSearchParams;
+                formUrlParams.append('campaign_code', this.camp_code);
+
                 try {
-                    const res = await this.makeApiCall(formData, 'Download campaign success !!')
-                    console.log(res)
+                    const res = await this.makeApiCall(formUrlParams, 'Download campaign success !!');
+                    console.log(res);
+
+                    return res;
                 } catch (err) {
-                    console.log(err)
-                        // err.text()
-                        // .then(data=>{
-                        //     console.log(data)
-                        // })
-                        // .catch(err=>{
-                        //     console.log(err)
-                        // })
+                    console.log(err);
+
+                    return err;
                 }
-            })
+            });
+
         }
 
         clickAction(id) {
@@ -129,43 +150,32 @@
 
         /**
          * Makes an api call to adbirt backend
-         * @param {FormData} reqBody The request body
+         * @param {URLSearchParams} reqBody The request body
          * @param {string} msg An alert message
          * @returns {Promise}
          */
-        makeApiCall(reqBody, msg) {
-            return new Promise((resolve, reject) => {
-                fetch(this.url, {
-                        method: "POST",
-                        body: reqBody
-                    })
-                    .then(res => {
-                        res.text()
-                            .then(data => {
-                                // if(res.status !== 200 && res.status !==201){
-                                reject(data)
-                                    // }else{
-                                    //     resolve(data)
-                                    //     console.log(msg)
-                                    // }
-                            })
-                            .catch(err => {
-                                reject(err)
-                            })
-                    })
-                    .catch(err => {
-                        err.json()
-                            .then(data => {
-                                reject(data)
-                            })
-                            .catch(() => {
-                                err.text()
-                                    .then(data => {
-                                        reject(data)
-                                    })
-                            })
-                    })
-            })
+        async makeApiCall(reqBody, msg) {
+
+            try {
+
+                const res = await fetch(this.url, {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: reqBody
+                });
+
+                const json = await res.json();
+
+                // bookmark
+
+                console.log(json);
+
+                return json;
+            } catch (error) {
+                return error;
+            }
 
         }
 

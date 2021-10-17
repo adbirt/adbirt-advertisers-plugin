@@ -40,6 +40,7 @@ class AdbirtAdvertisers
         $attrs = shortcode_atts(
             array(
                 'href' => '',
+                'download' => null
             ),
             $attributes
         );
@@ -48,7 +49,7 @@ class AdbirtAdvertisers
 
         ob_start();
 ?>
-        <a id="<?php echo $unique_id; ?>" href="<?php echo $attrs['href'] ?>">
+        <a id="<?php echo $unique_id; ?>" href="<?php echo $attrs['href'] ?>" <?php echo isset($attrs['download']) ? 'download="' . $attrs['download'] . '"' : ''; ?>>
             <button class="button btn adbirt-btn">
                 <?php echo $content; ?>
             </button>
@@ -114,10 +115,10 @@ class AdbirtAdvertisers
         ob_start();
     ?>
         <script>
-            (() => {
+            (async () => {
                 const AB = window.adbirtNoConflict();
 
-                <?php echo $snippet; ?>
+                return await <?php echo $snippet; ?>
             })();
         </script>
 <?php
@@ -153,6 +154,7 @@ class AdbirtAdvertisers
         // $is_success_page_url = false;
 
         foreach (array('landing', 'success') as $index => $mode) {
+
             $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url_encoded&url_type=$mode");
             $body = json_decode($res['body'], true);
 
