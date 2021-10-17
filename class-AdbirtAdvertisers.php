@@ -145,17 +145,15 @@ class AdbirtAdvertisers
         global $wp;
 
         $url_query_vars = $wp->query_vars;
-        unset($url_query_vars['page']);
-        unset($url_query_vars['pagename']);
-        unset($url_query_vars['post']);
-        unset($url_query_vars['postname']);
+
+        // unset($url_query_vars['page']);
+        // unset($url_query_vars['pagename']);
+        // unset($url_query_vars['post']);
+        // unset($url_query_vars['postname']);
 
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
         $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
         $req_url_encoded = urlencode($req_url);
-
-        // $is_landing_page_url = false;
-        // $is_success_page_url = false;
 
         foreach (array('landing', 'success') as $index => $mode) {
 
