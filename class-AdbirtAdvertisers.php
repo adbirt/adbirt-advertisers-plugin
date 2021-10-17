@@ -145,6 +145,10 @@ class AdbirtAdvertisers
         global $wp;
 
         $url_query_vars = $wp->query_vars;
+        unset($url_query_vars['page']);
+        unset($url_query_vars['pagename']);
+        unset($url_query_vars['post']);
+        unset($url_query_vars['postname']);
 
         // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
         $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
