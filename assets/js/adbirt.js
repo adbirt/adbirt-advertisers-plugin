@@ -166,8 +166,6 @@
 
                 const json = await res.json();
 
-                // bookmark
-
                 console.log(json);
 
                 return json;
