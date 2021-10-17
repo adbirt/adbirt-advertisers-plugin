@@ -47,9 +47,7 @@
         async redirectFormSubmit() {
 
             try {
-                // if (this.isCampaignPage) {
-                //     return;
-                // }
+
                 let token = window.localStorage.getItem('redirect_camp_code');
 
                 if (token) {
