@@ -18,7 +18,7 @@ class AdbirtAdvertisers
     public function __construct()
     {
         add_filter('wp_enqueue_scripts', array($this, 'register_css_and_js'));
-        add_filter('the_content', array($this, 'add_advertisers_js_filter'), 1);
+        // add_filter('the_content', array($this, 'add_advertisers_js_filter'), 1);
 
         add_shortcode('adbirt-landing-page-tracker', array($this, 'adbirt_landing_page_tracker_shortcode'));
         add_shortcode('adbirt-success-page-tracker', array($this, 'adbirt_success_page_tracker_shortcode'));
@@ -140,38 +140,38 @@ class AdbirtAdvertisers
     }
 
 
-    public function add_advertisers_js_filter($content)
-    {
-        global $wp;
+    // public function add_advertisers_js_filter($content)
+    // {
+    //     global $wp;
 
-        $url_query_vars = $wp->query_vars;
+    //     $url_query_vars = $wp->query_vars;
 
-        unset($url_query_vars['page']);
-        unset($url_query_vars['pagename']);
-        unset($url_query_vars['name']);
+    //     unset($url_query_vars['page']);
+    //     unset($url_query_vars['pagename']);
+    //     unset($url_query_vars['name']);
 
-        // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
-        $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
-        $req_url_encoded = urlencode($req_url);
+    //     // $req_url = add_query_arg($wp->query_vars, home_url($wp->request));
+    //     $req_url = home_url(add_query_arg($url_query_vars, $wp->request));
+    //     $req_url_encoded = urlencode($req_url);
 
-        foreach (array('landing', 'success') as $index => $mode) {
+    //     foreach (array('landing', 'success') as $index => $mode) {
 
-            $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url_encoded&url_type=$mode");
-            $body = json_decode($res['body'], true);
+    //         $res = wp_safe_remote_get("https://adbirt.com/api/check-if-url-is-valid-campaign?url_in_question=$req_url_encoded&url_type=$mode");
+    //         $body = json_decode($res['body'], true);
 
-            $is_valid = boolval($body['is_valid']);
+    //         $is_valid = boolval($body['is_valid']);
 
-            if ($is_valid) {
-                $content .= do_shortcode("[adbirt-$mode-page-tracker]");
-            } else {
-                // not a campaign page
-            }
+    //         if ($is_valid) {
+    //             $content .= do_shortcode("[adbirt-$mode-page-tracker]");
+    //         } else {
+    //             // not a campaign page
+    //         }
 
-            // $content .= "<br><p>url is: $req_url<p><br>";
-        }
+    //         // $content .= "<br><p>url is: $req_url<p><br>";
+    //     }
 
-        return $content;
-    }
+    //     return $content;
+    // }
 
     public function register_css_and_js()
     {
